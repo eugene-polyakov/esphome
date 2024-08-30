@@ -144,21 +144,18 @@ float ADCSensor::sample()
       .atten = ADC_ATTEN_DB_12,
       .bitwidth = ADC_BITWIDTH_DEFAULT,
   };
-  ESP_ERROR_CHECK(adc_oneshot_config_channel(adc1_handle, ADC1_CHAN0, &config));
-  //ESP_ERROR_CHECK(adc_oneshot_config_channel(adc1_handle, ADC1_CHAN1, &config));
+  ESP_ERROR_CHECK(adc_oneshot_config_channel(adc1_handle, self.channel1_, &config));
   
   //-------------ADC1 Calibration Init---------------//
   adc_cali_handle_t adc1_cali_chan0_handle = NULL;
-  adc_cali_handle_t adc1_cali_chan1_handle = NULL;
-  bool do_calibration1_chan0 = adc_calibration_init(ADC_UNIT_1, ADC1_CHAN0, ADC_ATTEN, &adc1_cali_chan0_handle);
-  //bool do_calibration1_chan1 = adc_calibration_init(ADC_UNIT_1, ADC1_CHAN1, ADC_ATTEN, &adc1_cali_chan1_handle);
+  bool do_calibration1_chan0 = adc_calibration_init(ADC_UNIT_1, self.channel1_, ADC_ATTEN, &adc1_cali_chan0_handle);
   
-  adc_oneshot_read(adc1_handle, ADC1_CHAN0, &adc_raw[0][0]);
-  ESP_LOGI(TAG, "ADC%d Channel[%d] Raw Data: %d", ADC_UNIT_1 + 1, ADC1_CHAN0, adc_raw[0][0]);
+  adc_oneshot_read(adc1_handle, self.channel1_, &adc_raw[0][0]);
+  ESP_LOGI(TAG, "ADC%d Channel[%d] Raw Data: %d", ADC_UNIT_1 + 1, self.channel1_, adc_raw[0][0]);
   if (do_calibration1_chan0) {
       // Convert the ADC raw result into calibrated result
       ESP_ERROR_CHECK(adc_cali_raw_to_voltage(adc1_cali_chan0_handle, adc_raw[0][0], &voltage[0][0]));
-      ESP_LOGI(TAG, "ADC%d Channel[%d] Calibrated Voltage: %d mV", ADC_UNIT_1 + 1, ADC1_CHAN0, voltage[0][0]);
+      ESP_LOGI(TAG, "ADC%d Channel[%d] Calibrated Voltage: %d mV", ADC_UNIT_1 + 1, self.channel1_, voltage[0][0]);
   }
   
   /*
